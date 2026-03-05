@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en-US">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -79,14 +79,14 @@
   <div class="wrap">
     <div class="card">
       <h1>LLM-as-a-Judge Web</h1>
-      <p>Forneca pergunta e duas respostas. A API OpenAI retorna comparacao estritamente descritiva e imparcial.</p>
+      <p>Provide a question and two answers. The OpenAI API returns a strictly descriptive, impartial comparison.</p>
     </div>
 
     <div class="card">
       <form method="post" action="/analyze">
         <div class="grid">
           <div>
-            <label for="model">Modelo juiz OpenAI</label>
+            <label for="model">OpenAI Judge Model</label>
             <input id="model" name="model" value="{{ model }}" required />
           </div>
           <div>
@@ -95,43 +95,43 @@
           </div>
         </div>
 
-        <label for="question">Pergunta</label>
+        <label for="question">Question</label>
         <textarea id="question" name="question" required>{{ question }}</textarea>
 
         <div class="grid">
           <div>
-            <label for="answer_1">Resposta Modelo 1</label>
+            <label for="answer_1">Model 1 Answer</label>
             <textarea id="answer_1" name="answer_1" required>{{ answer_1 }}</textarea>
           </div>
           <div>
-            <label for="answer_2">Resposta Modelo 2</label>
+            <label for="answer_2">Model 2 Answer</label>
             <textarea id="answer_2" name="answer_2" required>{{ answer_2 }}</textarea>
           </div>
         </div>
 
-        <button class="btn" type="submit">Analisar</button>
+        <button class="btn" type="submit">Analyze</button>
       </form>
     </div>
 
     {% if error %}
     <div class="card">
-      <div class="error">Erro: {{ error }}</div>
+      <div class="error">Error: {{ error }}</div>
     </div>
     {% endif %}
 
     {% if result %}
     <div class="card">
-      <div class="summary">Comparacao descritiva (sem nota e sem vencedor)</div>
+      <div class="summary">Descriptive comparison (no scoring and no winner)</div>
       <ul>
         {% for item in result.bullets %}
         <li>{{ item }}</li>
         {% endfor %}
       </ul>
-      <p><strong>Resumo final:</strong> {{ result.final_summary }}</p>
+      <p><strong>Final summary:</strong> {{ result.final_summary }}</p>
     </div>
 
     <div class="card">
-      <h3>JSON da Analise</h3>
+      <h3>Comparison JSON</h3>
       <pre>{{ result_json }}</pre>
     </div>
     {% endif %}

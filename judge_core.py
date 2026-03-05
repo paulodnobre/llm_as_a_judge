@@ -8,45 +8,46 @@ from typing import Any
 from openai import OpenAI
 
 
-SYSTEM_PROMPT = """Voce e um comparador textual estritamente descritivo e imparcial.
+SYSTEM_PROMPT = """You are a strictly descriptive, impartial text comparator.
 
-Tarefa:
-- Comparar Resposta A e Resposta B apenas por diferencas observaveis no texto.
-- Nao decidir vencedora.
-- Nao dar nota.
-- Nao inferir qualidade factual.
-- Nao elogiar, nao criticar, nao recomendar.
-- Nao usar termos de superioridade/inferioridade.
+Task:
+- Compare Answer A and Answer B using only observable differences in the text.
+- Do not choose a winner.
+- Do not assign scores.
+- Do not infer factual quality.
+- Do not praise, criticize, or recommend.
+- Do not use superiority/inferiority language.
 
-Foque em aspectos observaveis:
-- cobertura dos pontos pedidos;
-- nivel de detalhe;
-- extensao;
-- objetividade vs elaboracao;
-- tom, estrutura e organizacao;
-- exemplos, ressalvas e explicacoes adicionais;
-- sinais claros de repeticao/rodeio/generalidade.
+Focus only on observable aspects:
+- coverage of requested points;
+- level of detail;
+- response length;
+- directness vs elaboration;
+- tone, structure, and organization;
+- presence of examples, caveats, or added explanations;
+- clearly observable signs of filler (repetition, generic phrasing, roundabout wording).
 
-Regras de linguagem:
-- Use formulacoes neutras e comparativas.
-- Nao use palavras como: melhor, pior, superior, inferior, mais correta, mais util, mais fraca, mais forte.
+Language rules:
+- Use neutral comparative wording.
+- Do not use words like: better, worse, superior, inferior, more correct, more useful, weaker, stronger.
 
-Formato de saida:
-- Retorne SOMENTE JSON valido.
-- Schema exato:
+Output format:
+- Return ONLY valid JSON.
+- Exact schema:
 {
-  "bullets": ["3 a 6 bullets objetivos"],
-  "final_summary": "1 frase final sem julgamento"
+  "bullets": ["3 to 6 objective bullets"],
+  "final_summary": "1 final sentence without judgment"
 }
+- Write output in American English.
 """
 
-USER_TEMPLATE = """Pergunta:
+USER_TEMPLATE = """Question:
 {question}
 
-Resposta A:
+Answer A:
 {answer_a}
 
-Resposta B:
+Answer B:
 {answer_b}
 """
 
@@ -89,16 +90,16 @@ def normalize_result(raw: dict[str, Any]) -> dict[str, Any]:
     bullets = _sanitize_bullets(raw.get("bullets", []))
     final_summary = str(raw.get("final_summary", "")).strip()[:320]
 
-    # Keep output shape stable if model under-delivers.
+    # Keep output shape stable if the model under-delivers.
     if len(bullets) < 3:
         fallback = [
-            "A Resposta A e a Resposta B abordam a pergunta com estruturas diferentes.",
-            "Ha diferencas observaveis de extensao e nivel de detalhe entre os textos.",
-            "Os textos variam na forma de organizacao e no grau de objetividade.",
+            "Answer A and Answer B address the question with different structures.",
+            "There are observable differences in length and level of detail.",
+            "The responses vary in organization and degree of directness.",
         ]
         bullets = (bullets + fallback)[:3]
     if not final_summary:
-        final_summary = "De forma geral, as respostas diferem em extensao, detalhamento e organizacao textual."
+        final_summary = "Overall, the responses differ in length, detail, and textual organization."
 
     return {
         "bullets": bullets,

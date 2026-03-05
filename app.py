@@ -49,7 +49,7 @@ def analyze():
             question=question,
             answer_1=answer_1,
             answer_2=answer_2,
-            error="Preencha todos os campos.",
+            error="Please fill in all fields.",
         )
 
     try:
@@ -61,7 +61,7 @@ def analyze():
             question=question,
             answer_1=answer_1,
             answer_2=answer_2,
-            error="Temperature invalida.",
+            error="Invalid temperature value.",
         )
 
     try:

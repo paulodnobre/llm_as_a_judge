@@ -64,11 +64,11 @@ def load_examples(path: Path) -> list[Example]:
 
 def to_markdown(report: dict, model: str, temperature: float) -> str:
     lines = [
-        "# Relatorio Descritivo A/B",
+        "# Descriptive A/B Report",
         "",
-        f"- Modelo: `{model}`",
+        f"- Model: `{model}`",
         f"- Temperature: `{temperature}`",
-        f"- Total de casos: `{report['summary']['total_examples']}`",
+        f"- Total cases: `{report['summary']['total_examples']}`",
         "",
     ]
     for case in report["per_example"]:
@@ -77,7 +77,7 @@ def to_markdown(report: dict, model: str, temperature: float) -> str:
         for bullet in case["comparison"]["bullets"]:
             lines.append(f"- {bullet}")
         lines.append("")
-        lines.append(f"Resumo final: {case['comparison']['final_summary']}")
+        lines.append(f"Final summary: {case['comparison']['final_summary']}")
         lines.append("")
     return "\n".join(lines).strip() + "\n"
 
