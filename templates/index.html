@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM Judge Web</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --ink: #1a2433;
+      --muted: #5c6d82;
+      --accent: #0b6bcb;
+      --ok: #1f8a4c;
+      --error: #b42318;
+      --line: #d9e2ef;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e5eefb 0%, var(--bg) 45%, #eef5f2 100%);
+      color: var(--ink);
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    p { margin: 4px 0 0; color: var(--muted); }
+    label { display: block; font-weight: 700; margin: 12px 0 6px; }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .grid { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+    .btn {
+      margin-top: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    .error { color: var(--error); font-weight: 700; }
+    .summary { color: var(--ok); font-weight: 700; }
+    pre {
+      background: #0f1720;
+      color: #d9e2ef;
+      border-radius: 10px;
+      padding: 12px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    @media (max-width: 840px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>LLM-as-a-Judge Web</h1>
+      <p>Forneca pergunta e duas respostas. A API OpenAI retorna comparacao estritamente descritiva e imparcial.</p>
+    </div>
+
+    <div class="card">
+      <form method="post" action="/analyze">
+        <div class="grid">
+          <div>
+            <label for="model">Modelo juiz OpenAI</label>
+            <input id="model" name="model" value="{{ model }}" required />
+          </div>
+          <div>
+            <label for="temperature">Temperature</label>
+            <input id="temperature" name="temperature" type="number" min="0" max="2" step="0.1" value="{{ temperature }}" required />
+          </div>
+        </div>
+
+        <label for="question">Pergunta</label>
+        <textarea id="question" name="question" required>{{ question }}</textarea>
+
+        <div class="grid">
+          <div>
+            <label for="answer_1">Resposta Modelo 1</label>
+            <textarea id="answer_1" name="answer_1" required>{{ answer_1 }}</textarea>
+          </div>
+          <div>
+            <label for="answer_2">Resposta Modelo 2</label>
+            <textarea id="answer_2" name="answer_2" required>{{ answer_2 }}</textarea>
+          </div>
+        </div>
+
+        <button class="btn" type="submit">Analisar</button>
+      </form>
+    </div>
+
+    {% if error %}
+    <div class="card">
+      <div class="error">Erro: {{ error }}</div>
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="card">
+      <div class="summary">Comparacao descritiva (sem nota e sem vencedor)</div>
+      <ul>
+        {% for item in result.bullets %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      <p><strong>Resumo final:</strong> {{ result.final_summary }}</p>
+    </div>
+
+    <div class="card">
+      <h3>JSON da Analise</h3>
+      <pre>{{ result_json }}</pre>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
