@@ -59,8 +59,30 @@
       padding: 10px 14px;
       cursor: pointer;
     }
+    .check-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .check-row input { width: auto; }
+    .hidden { display: none; }
     .error { color: var(--error); font-weight: 700; }
     .summary { color: var(--ok); font-weight: 700; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th { background: #f8fbff; }
     pre {
       background: #0f1720;
       color: #d9e2ef;
@@ -79,7 +101,7 @@
   <div class="wrap">
     <div class="card">
       <h1>LLM-as-a-Judge Web</h1>
-      <p>Provide a question and two answers. The OpenAI API returns a strictly descriptive, impartial comparison.</p>
+      <p>Default mode provides descriptive comparison. Enable Ground Truth mode to score both answers with faithfulness, answer relevance, completeness, and conciseness.</p>
     </div>
 
     <div class="card">
@@ -95,16 +117,27 @@
           </div>
         </div>
 
+        <div class="check-row">
+          <input id="use_ground_truth" name="use_ground_truth" type="checkbox" {% if use_ground_truth %}checked{% endif %} />
+          <label for="use_ground_truth" style="margin:0;">Use Ground Truth methodology</label>
+        </div>
+
         <label for="question">Question</label>
         <textarea id="question" name="question" required>{{ question }}</textarea>
 
+        <div id="ground_truth_block" class="{% if not use_ground_truth %}hidden{% endif %}">
+          <label for="ground_truth">Human Ground Truth Answer</label>
+          <textarea id="ground_truth" name="ground_truth">{{ ground_truth }}</textarea>
+          <p>When enabled, this reference answer is used for vector-based evaluation.</p>
+        </div>
+
         <div class="grid">
           <div>
-            <label for="answer_1">Model 1 Answer</label>
+            <label for="answer_1">Model 1 Answer (A)</label>
             <textarea id="answer_1" name="answer_1" required>{{ answer_1 }}</textarea>
           </div>
           <div>
-            <label for="answer_2">Model 2 Answer</label>
+            <label for="answer_2">Model 2 Answer (B)</label>
             <textarea id="answer_2" name="answer_2" required>{{ answer_2 }}</textarea>
           </div>
         </div>
@@ -121,7 +154,30 @@
 
     {% if result %}
     <div class="card">
+      {% if result.mode == "ground_truth" %}
+      <div class="summary">Ground Truth vector evaluation</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Vector</th>
+            <th>Answer A</th>
+            <th>Answer B</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Faithfulness</td><td>{{ '%.3f'|format(result.scores.A.faithfulness) }}</td><td>{{ '%.3f'|format(result.scores.B.faithfulness) }}</td></tr>
+          <tr><td>Answer Relevance</td><td>{{ '%.3f'|format(result.scores.A.answer_relevance) }}</td><td>{{ '%.3f'|format(result.scores.B.answer_relevance) }}</td></tr>
+          <tr><td>Completeness</td><td>{{ '%.3f'|format(result.scores.A.completeness) }}</td><td>{{ '%.3f'|format(result.scores.B.completeness) }}</td></tr>
+          <tr><td>Conciseness</td><td>{{ '%.3f'|format(result.scores.A.conciseness) }}</td><td>{{ '%.3f'|format(result.scores.B.conciseness) }}</td></tr>
+          <tr><td><strong>Overall (mean)</strong></td><td><strong>{{ '%.3f'|format(result.overall.A) }}</strong></td><td><strong>{{ '%.3f'|format(result.overall.B) }}</strong></td></tr>
+        </tbody>
+      </table>
+      <p><strong>A rationale:</strong> {{ result.short_rationale_a }}</p>
+      <p><strong>B rationale:</strong> {{ result.short_rationale_b }}</p>
+      {% else %}
       <div class="summary">Descriptive comparison (no scoring and no winner)</div>
+      {% endif %}
+
       <ul>
         {% for item in result.bullets %}
         <li>{{ item }}</li>
@@ -136,5 +192,20 @@
     </div>
     {% endif %}
   </div>
+
+  <script>
+    const gtCheckbox = document.getElementById('use_ground_truth');
+    const gtBlock = document.getElementById('ground_truth_block');
+    const gtTextarea = document.getElementById('ground_truth');
+
+    function syncGroundTruthVisibility() {
+      const enabled = gtCheckbox.checked;
+      gtBlock.classList.toggle('hidden', !enabled);
+      gtTextarea.required = enabled;
+    }
+
+    gtCheckbox.addEventListener('change', syncGroundTruthVisibility);
+    syncGroundTruthVisibility();
+  </script>
 </body>
 </html>
