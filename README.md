@@ -24,11 +24,13 @@ pip install -r requirements.txt
 ```
 
 ## OpenAI credentials
-Create a `.env` file (or export in your shell):
+Create either a `.env` file or an `env.cfg` file (or export in your shell):
 
 ```bash
 OPENAI_API_KEY=your_api_key_here
 ```
+
+Both entrypoints load `.env` and `env.cfg` automatically.
 
 ## 1) Web interface
 Run:

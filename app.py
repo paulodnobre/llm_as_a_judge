@@ -3,14 +3,14 @@ from __future__ import annotations
 
 import json
 
-from dotenv import load_dotenv
 from flask import Flask, render_template, request
 from openai import OpenAI
 
+from env_config import require_openai_api_key
 from judge_core import CompareConfig, compare_answers, compare_answers_with_ground_truth
 
 
-load_dotenv()
+require_openai_api_key()
 app = Flask(__name__)
 
 

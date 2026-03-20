@@ -8,9 +8,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
 from openai import OpenAI
 
+from env_config import require_openai_api_key
 from judge_core import CompareConfig, compare_answers, compare_answers_with_ground_truth
 
 
@@ -91,7 +91,7 @@ def to_markdown(report: dict, model: str, temperature: float) -> str:
 
 
 def main() -> None:
-    load_dotenv()
+    require_openai_api_key()
     args = parse_args()
 
     client = OpenAI()
