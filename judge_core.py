@@ -70,8 +70,8 @@ Rules:
 
 Few-shot reference example:
 Question: Do you happen to have expertise in setting up backend infrastructure on AWS to be HIPAA compliant?
-Human ground truth answer: Many of our HIPAA compliant clients are using AWS, let me confirm which ones we set up from scratch and I'll let you know. In case it helps too, few of them uses Aptible (https://aptible.com/), which is a PaaS over AWS that helps managing the infra and ensures it to be HIPAA Compliant. what kind of details would it work for you? just which ones were the clients?
-Bed Connect uses AWS., Cardiex uses Aptible. CareBridge, Catapult Health and Globo uses AWS (either ECS or EC2), but managed by their own devops teams
+Human ground truth answer: Many of our HIPAA compliant clients are using AWS, let me confirm which ones we set up from scratch and I'll let you know. In case it helps too, few of them uses Aptible (https://aptible.com/), which is a PaaS over AWS that helps managing the infra and ensures it to be HIPAA Compliant.
+Client A uses AWS, Client B uses Aptible. Client C and Client D use AWS (either ECS or EC2), but are managed by their own devops teams
 """
 
 VECTOR_USER_TEMPLATE = """Question:
